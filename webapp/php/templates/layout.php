@@ -7,7 +7,7 @@
 </head>
 
 <body class="container">
-<h1 class="jumbotron"><a href="/">Twitterrrへようこそ!</a></h1>
+<h1 class="jumbotron"><a href="/">Pixiiivへようこそ!</a></h1>
 
 <?php echo $_html ?>
 

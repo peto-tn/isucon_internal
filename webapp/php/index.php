@@ -173,16 +173,53 @@ $app->get('/', function () use ($app) {
     $app->render('index.php', $locals);
 });
 
-$app->get('/tweet', function () use ($app) {
+$app->get('/upload_image', function () use ($app) {
     authenticated();
-    $app->render('tweet.php');
+    $app->render('upload_image.php');
 });
 
-$app->post('/tweet', function () use ($app) {
+$app->get('/upload_success', function () use ($app) {
+    authenticated();
+    $app->render('upload_success.php');
+});
+
+$app->get('/upload_error', function () use ($app) {
+    authenticated();
+    $app->render('upload_error.php');
+});
+
+$app->post('/upload_image', function () use ($app) {
     authenticated();
     $params = $app->request->params();
-    db_execute('INSERT INTO tweet (user_id, content) VALUES (?, ?)', array(current_user()['id'], $params['content']));
-    $app->redirect('/');
+    db_execute('BEGIN');
+    db_execute('INSERT INTO image (user_id, title) VALUES (?, ?)', array(current_user()['id'], $params['title']));
+    $image = db_execute('SELECT MAX(image_id) AS image_id FROM image WHERE user_id = ?', array(current_user()['id']))->fetch();
+    if(move_uploaded_file($_FILES['image']['tmp_name'], '/home/isucon/webapp/image/' . $image['image_id'])) {
+        db_execute('COMMIT');
+        $app->redirect('upload_success');
+    }
+    else {
+        db_execute('ROLLBACK');
+        $app->redirect('upload_error');
+    }
+});
+
+$app->get('/favorite/:image_id', function ($image_id) use ($app) {
+    authenticated();
+    $favorites = db_execute('SELECT * FROM favorite WHERE image_id = ?', array($image_id))->fetchAll();
+    $image = db_execute('SELECT * FROM image WHERE image_id = ?', array($image_id))->fetch();
+    $locals = array(
+        'favorites' => $favorites,
+        'image' => $image,
+    );
+    $app->render('favorite.php', $locals);
+});
+
+$app->post('/favorite', function () use ($app) {
+    authenticated();
+    $params = $app->request->params();
+    db_execute('INSERT INTO favorite (image_id, user_id) VALUES (?, ?)', array($params['image_id'], current_user()['id']));
+    $app->redirect('/view_image/' . $params['image_id']);
 });
 
 $app->get('/user/:user_id', function ($user_id) use ($app) {
@@ -195,6 +232,23 @@ $app->get('/user/:user_id', function ($user_id) use ($app) {
         'myself' => current_user(),
     );
     $app->render('user.php', $locals);
+});
+
+$app->get('/view_image/:image_id', function ($image_id) use ($app) {
+    authenticated();
+    $image = db_execute('SELECT * FROM image WHERE image_id = ?', array($image_id))->fetch();
+    $image['path'] = '/image/' . $image['image_id'];
+    $myself = current_user();
+    $user = db_execute('SELECT * FROM user WHERE id = ?', array($image['user_id']))->fetch();
+    $favorites = db_execute('SELECT * FROM favorite WHERE image_id = ?', array($image_id))->fetchAll();
+    $favorited = db_execute('SELECT * FROM favorite WHERE image_id = ? AND user_id = ?', array($image_id, $myself['id']))->fetch();
+    $locals = array(
+        'image' => $image,
+        'user' => $user,
+        'favorites' => $favorites,
+        'favorited' => $favorited,
+    );
+    $app->render('view_image.php', $locals);
 });
 
 $app->get('/following', function () use ($app) {
