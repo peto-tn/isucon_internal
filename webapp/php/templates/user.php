@@ -11,17 +11,10 @@
     <input type="submit" class="btn btn-default" value="フォローする" />
   </form>
 <?php } ?>
-<?php foreach ($tweets as $tweet) { ?>
-<div class="tweet">
-  <?php $tweet_user = get_user($tweet['user_id']) ?>
-  <div class="user">
-    <a href="/user/<?php h($tweet_user['id']) ?>"><?php h($tweet_user['name']) ?></a>
-  </div>
-  <div class="tweet">
-    <?php foreach (preg_split('/\n/', $tweet['content']) as $line) { ?>
-    <?php h($line) ?><br />
-    <?php } ?>
-  </div>
-  <div class="friend-date">投稿時刻:<?php h($tweet['created_at']) ?></div>
+<?php foreach ($images as $image) { ?>
+<h3>作品</h3>
+<div class="image">
+  <a href="/view_image/<?php h($image['image_id']) ?>"><?php h($image['title']) ?></a>
+  <div class="friend-date">投稿時刻:<?php h($image['created_at']) ?></div>
 </div>
 <?php } ?>

@@ -157,16 +157,14 @@ $app->get('/', function () use ($app) {
     authenticated();
     $current_user = current_user();
 
-    $tweets = db_execute(
-        'SELECT * FROM tweet WHERE USER_ID IN (SELECT follow_id FROM follow WHERE USER_ID = ?) OR USER_ID = ? ORDER BY created_at DESC LIMIT 100',
-        array($current_user['id'], $current_user['id']))->fetchAll();
+    $new_images = db_execute('SELECT * FROM image ORDER BY created_at DESC LIMIT 100')->fetchAll();
 
     $following = db_execute('SELECT * FROM follow WHERE user_id = ?', array($current_user['id']))->fetchAll();
     $followers = db_execute('SELECT * FROM follow WHERE follow_id = ?', array($current_user['id']))->fetchAll();
 
     $locals = array(
         'user' => current_user(),
-        'tweets' => $tweets,
+        'new_images' => $new_images,
         'following' => $following,
         'followers' => $followers,
     );
@@ -225,10 +223,10 @@ $app->post('/favorite', function () use ($app) {
 $app->get('/user/:user_id', function ($user_id) use ($app) {
     authenticated();
     $user = get_user($user_id);
-    $tweets = db_execute('SELECT * FROM tweet WHERE user_id = ? ORDER BY created_at DESC LIMIT 100', array($user_id))->fetchAll();
+    $images = db_execute('SELECT * FROM image WHERE user_id = ? ORDER BY created_at DESC LIMIT 100', array($user_id))->fetchAll();
     $locals = array(
         'user' => $user,
-        'tweets' => $tweets,
+        'images' => $images,
         'myself' => current_user(),
     );
     $app->render('user.php', $locals);
