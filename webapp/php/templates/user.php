@@ -11,8 +11,8 @@
     <input type="submit" class="btn btn-default" value="フォローする" />
   </form>
 <?php } ?>
-<?php foreach ($images as $image) { ?>
 <h3>作品</h3>
+<?php foreach ($images as $image) { ?>
 <div class="image">
   <a href="/view_image/<?php h($image['image_id']) ?>"><?php h($image['title']) ?></a>
   <div class="friend-date">投稿時刻:<?php h($image['created_at']) ?></div>

@@ -10,7 +10,7 @@
   <h3>新着</h3>
   <?php foreach ($new_images as $image) { ?>
     <div class="image">
-      <a href="/view_image/<?php h($image['image_id']) ?>"><img src=<?php h('/image/' . $image['image_id']) ?>></a><br>
+      <a href="/view_image/<?php h($image['image_id']) ?>"><img class="thumbnail-img" src=<?php h('/image/' . $image['image_id']) ?>></a><br>
     </div>
   <?php } ?>
 </div>

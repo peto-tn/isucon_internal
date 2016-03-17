@@ -1065,6 +1065,10 @@ th {
 .glyphicon-menu-up:before {
   content: "\e260";
 }
+.thumbnail-img {
+  max-width: 100px;
+  max-height: 100px;
+}
 * {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
